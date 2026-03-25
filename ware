@@ -75,7 +75,7 @@ WallCheckButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
 WallCheckButton.BackgroundTransparency = 0.750
 WallCheckButton.BorderColor3 = Color3.fromRGB(0, 0, 0)
 WallCheckButton.BorderSizePixel = 0
-WallCheckButton.Position = UDim2.new(0.35, 0, 0.9, 0)
+WallCheckButton.Position = UDim2.new(0.673349977, 0, 0.68, 0)
 WallCheckButton.Size = UDim2.new(0, 180, 0, 41)
 WallCheckButton.Font = Enum.Font.SourceSansSemibold
 WallCheckButton.Text = "WallCheck [ВКЛ]"
@@ -168,8 +168,6 @@ Ping.Text = "Ping"
 Ping.TextColor3 = Color3.fromRGB(255, 255, 255)
 Ping.TextSize = 18.000
 Ping.TextStrokeTransparency = 0.000
-
-
 
 ClickGui.Name = "ClickGui"
 ClickGui.Parent = HexagonGui
@@ -858,7 +856,7 @@ local function KJPX_fake_script() -- ClickGui.OpenGUI
 end
 coroutine.wrap(KJPX_fake_script)()
 
--- Friends Panel
+-- Friends Panel Data
 local friendsPanelData = nil
 
 -- Main features script
@@ -915,7 +913,7 @@ local function HEXAGON_MainFeatures()
     end
 
     -- ============================
-    -- Friends Panel
+    -- Friends Panel (Whitelist)
     -- ============================
     local function createFriendsPanel()
         local FriendsPanel = Instance.new("Frame")
@@ -944,7 +942,7 @@ local function HEXAGON_MainFeatures()
         FriendsTitle.Position = UDim2.new(0, 0, 0, 0)
         FriendsTitle.Size = UDim2.new(1, 0, 0, 38)
         FriendsTitle.Font = Enum.Font.SourceSansSemibold
-        FriendsTitle.Text = "Друзья"
+        FriendsTitle.Text = "Друзья (Whitelist)"
         FriendsTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
         FriendsTitle.TextSize = 18.000
         
@@ -1619,7 +1617,6 @@ local function HEXAGON_MainFeatures()
         end
     end
 
-    -- Refresh functions
     local function refreshHitboxButton()
         hitboxButton.Text = hitboxEnabled and "Hitbox Extender [ВКЛ]" or "Hitbox Extender [ВЫКЛ]"
     end
@@ -1637,7 +1634,6 @@ local function HEXAGON_MainFeatures()
         hitboxESPVisibleButton.Text = hitboxESPVisible and "ESP Visible [ВКЛ]" or "ESP Visible [ВЫКЛ]"
     end
 
-    -- Hitbox button handlers
     hitboxButton.MouseButton1Click:Connect(function()
         toggleHitbox()
         refreshHitboxButton()
@@ -1893,12 +1889,12 @@ local function HEXAGON_MainFeatures()
     end)
 
     -- ============================
-    -- Aimbot с поддержкой клавиатурных биндов и WallCheck
+    -- Aimbot с WallCheck и Whitelist
     -- ============================
     local aimEnabled = false
     local aimMode = "hold"
     local aimOnlyVisible = true
-    local aimWallCheck = true  -- WallCheck включен по умолчанию
+    local aimWallCheck = true
     local aimPrediction = 0.1
     local autoPredictEnabled = true
     local aimSmoothness = math.clamp(parseNumber(smoothTextBox.Text, 0.25), 0.01, 1)
@@ -1906,18 +1902,17 @@ local function HEXAGON_MainFeatures()
     local aimHoldButton = "MouseButton1"
     local aimKeyboardKey = nil
 
-    -- Функция для обновления кнопки WallCheck
+    -- WallCheck refresh
     local function refreshWallCheckButton()
         wallCheckButton.Text = aimWallCheck and "WallCheck [ВКЛ]" or "WallCheck [ВЫКЛ]"
     end
 
-    -- Обработчик WallCheck
     wallCheckButton.MouseButton1Click:Connect(function()
         aimWallCheck = not aimWallCheck
         refreshWallCheckButton()
     end)
 
-    -- Функция для обновления кнопки AimKey
+    -- Aim Key functions
     local function refreshAimKeyButton()
         if aimKeyButton then
             if aimHoldButton == "MouseButton1" then
@@ -1933,7 +1928,6 @@ local function HEXAGON_MainFeatures()
         end
     end
 
-    -- Функция для проверки, активна ли клавиша аима
     local function isAimKeyPressed()
         if aimHoldButton == "MouseButton1" then
             return UserInputService:IsMouseButtonPressed(Enum.UserInputType.MouseButton1)
@@ -1945,29 +1939,22 @@ local function HEXAGON_MainFeatures()
         return false
     end
 
-    -- Обработчик для кнопки выбора клавиши аима
     if aimKeyButton then
         local isListeningForAimKey = false
-        local originalAimKeyText = aimKeyButton.Text
         
         aimKeyButton.MouseButton1Click:Connect(function()
             if isListeningForAimKey then
                 isListeningForAimKey = false
-                aimKeyButton.Text = originalAimKeyText
                 aimKeyButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-                aimKeyButton.BackgroundTransparency = 0.750
             else
                 isListeningForAimKey = true
                 aimKeyButton.Text = "Press any key..."
                 aimKeyButton.BackgroundColor3 = Color3.fromRGB(80, 50, 50)
-                aimKeyButton.BackgroundTransparency = 0.750
             end
         end)
         
-        local aimKeyConnection
-        aimKeyConnection = UserInputService.InputBegan:Connect(function(input, gameProcessed)
+        UserInputService.InputBegan:Connect(function(input, gameProcessed)
             if gameProcessed then return end
-            
             if isListeningForAimKey then
                 if input.UserInputType == Enum.UserInputType.MouseButton1 then
                     aimHoldButton = "MouseButton1"
@@ -1975,26 +1962,24 @@ local function HEXAGON_MainFeatures()
                     isListeningForAimKey = false
                     refreshAimKeyButton()
                     aimKeyButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-                    aimKeyButton.BackgroundTransparency = 0.750
                 elseif input.UserInputType == Enum.UserInputType.MouseButton2 then
                     aimHoldButton = "MouseButton2"
                     aimKeyboardKey = nil
                     isListeningForAimKey = false
                     refreshAimKeyButton()
                     aimKeyButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-                    aimKeyButton.BackgroundTransparency = 0.750
                 elseif input.UserInputType == Enum.UserInputType.Keyboard then
                     aimHoldButton = "Keyboard"
                     aimKeyboardKey = input.KeyCode
                     isListeningForAimKey = false
                     refreshAimKeyButton()
                     aimKeyButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-                    aimKeyButton.BackgroundTransparency = 0.750
                 end
             end
         end)
     end
 
+    -- Refresh functions for aimbot
     local function refreshAimModeButton()
         if aimModeButton then
             local modeText = "Hold"
@@ -2050,6 +2035,7 @@ local function HEXAGON_MainFeatures()
     refreshAimTypeButton()
     refreshWallCheckButton()
 
+    -- Prediction calculation
     local function calculateAutoPrediction()
         local success, ping = pcall(function()
             return game.Stats.Network.ServerStatsItem["Data Ping"]:GetValue() / 1000
@@ -2069,10 +2055,21 @@ local function HEXAGON_MainFeatures()
         end
     end
 
-    -- Функция проверки видимости через стены (WallCheck)
+    -- Visibility checks
+    local function isVisibleFromCamera(worldPosition, ignoreList)
+        if not camera then return false end
+        local origin = camera.CFrame.Position
+        local direction = (worldPosition - origin)
+        local params = RaycastParams.new()
+        params.FilterType = Enum.RaycastFilterType.Exclude
+        params.FilterDescendantsInstances = ignoreList or {}
+        local result = workspace:Raycast(origin, direction, params)
+        if not result then return true end
+        return (result.Position - worldPosition).Magnitude < 1.0
+    end
+
     local function isVisibleThroughWalls(worldPosition, targetCharacter)
         if not camera then return false end
-        
         local origin = camera.CFrame.Position
         local direction = (worldPosition - origin)
         local distance = direction.Magnitude
@@ -2087,15 +2084,13 @@ local function HEXAGON_MainFeatures()
         local result = workspace:Raycast(origin, direction, params)
         
         if not result then return true end
-        
-        -- Если луч достиг цели или очень близко к ней
         if (result.Position - worldPosition).Magnitude < 2 then
             return true
         end
-        
         return false
     end
 
+    -- Target selection
     local function getBestTargetPart(character)
         if not character then return nil end
         return character:FindFirstChild("Head") or character:FindFirstChild("HumanoidRootPart")
@@ -2107,7 +2102,8 @@ local function HEXAGON_MainFeatures()
         local originPos = getMousePosition()
         
         for _, other in ipairs(Players:GetPlayers()) do
-            if not (friendsPanel and friendsPanel.isPlayerFriend(other)) and other ~= localPlayer and other.Character then
+            -- Whitelist check: пропускаем друзей (не наводимся на них)
+            if not friendsPanel.isPlayerFriend(other) and other ~= localPlayer and other.Character then
                 local humanoid = other.Character:FindFirstChildOfClass("Humanoid")
                 if humanoid and humanoid.Health > 0 then
                     local targetPart = getBestTargetPart(other.Character)
@@ -2124,12 +2120,10 @@ local function HEXAGON_MainFeatures()
                                 inFovRange = (distance <= mouseRadius)
                             end
                             if inFovRange then
-                                -- Проверка видимости через Raycast (если включен)
                                 local visibleOk = true
                                 if aimOnlyVisible then
                                     visibleOk = isVisibleFromCamera(targetPart.Position, { localPlayer.Character })
                                 end
-                                -- Проверка WallCheck (если включен)
                                 if visibleOk and aimWallCheck then
                                     visibleOk = isVisibleThroughWalls(targetPart.Position, other.Character)
                                 end
@@ -2146,26 +2140,12 @@ local function HEXAGON_MainFeatures()
         return closestPlayer
     end
 
-    -- Старая функция isVisibleFromCamera для Raycast (оставляем для совместимости)
-    local function isVisibleFromCamera(worldPosition, ignoreList)
-        if not camera then return false end
-        local origin = camera.CFrame.Position
-        local direction = (worldPosition - origin)
-        local params = RaycastParams.new()
-        params.FilterType = Enum.RaycastFilterType.Exclude
-        params.FilterDescendantsInstances = ignoreList or {}
-        local result = workspace:Raycast(origin, direction, params)
-        if not result then return true end
-        return (result.Position - worldPosition).Magnitude < 1.0
-    end
-
-    -- Переменные для режимов
+    -- Aim active state
     local aimActive = false
     local aimToggleState = false
     local AIM_RENDERSTEP_NAME = "Hexagon_AimLoop"
     local aimLoopBound = false
 
-    -- Функция для обновления состояния aimActive
     local function updateAimActive()
         if not aimEnabled then
             aimActive = false
@@ -2179,13 +2159,12 @@ local function HEXAGON_MainFeatures()
         elseif aimMode == "mouse" then
             aimActive = isAimKeyPressed()
         elseif aimMode == "toggle" then
-            -- В toggle режиме состояние меняется только при нажатии клавиши
+            -- handled separately
         else
             aimActive = false
         end
     end
 
-    -- Обработчик для toggle режима
     local lastTogglePress = false
     local toggleConnection = RunService.Heartbeat:Connect(function()
         if aimMode == "toggle" and aimEnabled then
@@ -2198,7 +2177,6 @@ local function HEXAGON_MainFeatures()
         end
     end)
 
-    -- Запускаем обновление состояния в цикле
     local aimUpdateConnection
     local function startAimUpdateLoop()
         if aimUpdateConnection then aimUpdateConnection:Disconnect() end
@@ -2216,6 +2194,7 @@ local function HEXAGON_MainFeatures()
         end
     end
 
+    -- Main aim loop
     local function startAimLoop()
         if aimLoopBound then
             RunService:UnbindFromRenderStep(AIM_RENDERSTEP_NAME)
